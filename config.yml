@@ -5,6 +5,7 @@
     - name: new_username
       prompt: Insert Username
       private: false
+
   tasks:
 
   - name: install python3 and pip3 in Ubuntu
