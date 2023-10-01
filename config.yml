@@ -1,0 +1,52 @@
+---
+- hosts: all
+  become: true
+  vars_prompt:
+    - name: new_username
+      prompt: Insert Username
+      private: false
+  tasks:
+
+  - name: install python3 and pip3 in Ubuntu
+    apt:
+      name:
+        - python3
+        - python3-pip
+        - python-is-python3
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install python3 and pip3 in CentOS
+    command: "dnf install -y python3 python3-pip"
+    when: ansible_distribution == "CentOS"
+
+  - name: set python3 and pip3 as defaults in ubuntu
+    command: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    when: ansible_distribution == "Ubuntu"
+
+  - name: set pyhon3 and pip3 as defaults in CentOS
+    command: alternatives --install /usr/bin/python python /usr/bin/python3 1
+    when: ansible_distribution == "CentOS"
+
+  - name: install java openjdk in ubuntu
+    apt:
+      name: openjdk-11-jdk
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install java openjdk in CentOS
+    command: "dnf install -y java-1.8.0-openjdk"
+    when: ansible_distribution == "CentOS"
+
+  - name: Banner MOTD
+    ansible.builtin.debug:
+      msg: "{{motd}}"
+    vars:
+      motd: "Ansible Managed node by Karlo"
+
+  - name: Create a New user
+    user:
+      name: "{{new_username}}"
+      state: present
+      createhome: yes
